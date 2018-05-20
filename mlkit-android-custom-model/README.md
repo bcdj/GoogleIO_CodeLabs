@@ -9,3 +9,6 @@ This folder and projects follows the guide almost one for one on the implementat
 
 ### iOS
 This folder takes the Android sample application and ports it to iOS.
+
+### Model
+Contains the Pretrained model for the exercise.
