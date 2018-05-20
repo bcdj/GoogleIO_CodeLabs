@@ -4,10 +4,12 @@ This repo is a storage place for the work I put together while exploring the cod
 
 These are built as a learning exercise and have no guarantee on their continued accuracy or continued operation.
 ***
-## Identify objects in images using custom machine learning models with ML Kit for Firebase
+### MLKit Android Custom Model
+[Identify objects in images using custom machine learning models with ML Kit for Firebase](https://g.co/codelabs/mlkit-android-custom-model)
+
 __Start Day:__ May 20, 2018<br>
 __Folder:__ mlkit-android-custom-model
 
-https://codelabs.developers.google.com/codelabs/mlkit-android-custom-model/index.html?index=..%2F..%2Fio2018#0
+
 
 ***
