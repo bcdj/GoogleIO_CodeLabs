@@ -1,0 +1,38 @@
+2018-05-21 00:03:24.825205-0400 custom-model-codelab[8619:402919] 5.0.0 - [Firebase/Analytics][I-ACS023007] Firebase Analytics v.50000000 started
+2018-05-21 00:03:24.825399-0400 custom-model-codelab[8619:402919] 5.0.0 - [Firebase/Analytics][I-ACS023008] To enable debug logging set the following application argument: -FIRAnalyticsDebugEnabled (see http://goo.gl/RfcP7r)
+nnapi error: unable to open library libneuralnetworks.so
+2018-05-21 00:03:25.136677-0400 custom-model-codelab[8619:402929] TIC Read Status [1:0x0]: 1:57
+2018-05-21 00:03:25.136786-0400 custom-model-codelab[8619:402929] TIC Read Status [1:0x0]: 1:57
+2018-05-21 00:03:25.303826-0400 custom-model-codelab[8619:402930] TIC Read Status [3:0x0]: 1:57
+2018-05-21 00:03:25.303940-0400 custom-model-codelab[8619:402930] TIC Read Status [3:0x0]: 1:57
+2018-05-21 00:03:25.495972-0400 custom-model-codelab[8619:402935] TIC Read Status [4:0x0]: 1:57
+2018-05-21 00:03:25.496191-0400 custom-model-codelab[8619:402935] TIC Read Status [4:0x0]: 1:57
+2018-05-21 00:03:25.842667-0400 custom-model-codelab[8619:402930] *** Terminating app due to uncaught exception 'NSGenericException', reason: 'Completion handler blocks are not supported in background sessions. Use a delegate instead.'
+*** First throw call stack:
+(
+	0   CoreFoundation                      0x0000000108f691e6 __exceptionPreprocess + 294
+	1   libobjc.A.dylib                     0x00000001085fe031 objc_exception_throw + 48
+	2   CFNetwork                           0x000000010df97871 -[__NSURLBackgroundSession validateSerializabilityForRequest:completion:] + 172
+	3   CFNetwork                           0x000000010df9a0d3 -[__NSURLBackgroundSession _onqueue_downloadTaskForRequest:resumeData:completion:] + 36
+	4   CFNetwork                           0x000000010df9919d __90-[__NSURLBackgroundSession downloadTaskForRequest:downloadFilePath:resumeData:completion:]_block_invoke + 38
+	5   CFNetwork                           0x000000010df97c95 __68-[__NSURLBackgroundSession performBlockOnQueueAndRethrowExceptions:]_block_invoke + 64
+	6   libdispatch.dylib                   0x000000010c152848 _dispatch_client_callout + 8
+	7   libdispatch.dylib                   0x000000010c1595b8 _dispatch_queue_barrier_sync_invoke_and_complete + 374
+	8   CFNetwork                           0x000000010df97c01 -[__NSURLBackgroundSession performBlockOnQueueAndRethrowExceptions:] + 161
+	9   CFNetwork                           0x000000010df99106 -[__NSURLBackgroundSession downloadTaskForRequest:downloadFilePath:resumeData:completion:] + 215
+	10  custom-model-codelab                0x00000001074fb0c2 -[FIRModelDownloader downloadFileWithModelInfo:isUpdateRequest:completion:] + 583
+	11  custom-model-codelab                0x00000001074fa705 -[FIRModelDownloader downloadModelIfNeededForModelInfo:completion:] + 652
+	12  custom-model-codelab                0x00000001074fa257 __50-[FIRModelDownloader downloadModelWithCompletion:]_block_invoke + 187
+	13  custom-model-codelab                0x00000001074fd107 __81+[FIRModelInfoRetriever retrieveModelInfoForSource:app:callbackQueue:completion:]_block_invoke.36 + 614
+	14  GTMSessionFetcher                   0x000000010826cb03 __71-[GTMSessionFetcher invokeFetchCallbacksOnCallbackQueueWithData:error:]_block_invoke + 51
+	15  GTMSessionFetcher                   0x000000010826c736 __66-[GTMSessionFetcher invokeOnCallbackQueue:afterUserStopped:block:]_block_invoke + 582
+	16  libdispatch.dylib                   0x000000010c151807 _dispatch_call_block_and_release + 12
+	17  libdispatch.dylib                   0x000000010c152848 _dispatch_client_callout + 8
+	18  libdispatch.dylib                   0x000000010c15adda _dispatch_queue_serial_drain + 1714
+	19  libdispatch.dylib                   0x000000010c15b556 _dispatch_queue_invoke + 328
+	20  libdispatch.dylib                   0x000000010c15e3c8 _dispatch_root_queue_drain + 664
+	21  libdispatch.dylib                   0x000000010c15e0d2 _dispatch_worker_thread3 + 132
+	22  libsystem_pthread.dylib             0x000000010c67d169 _pthread_wqthread + 1387
+	23  libsystem_pthread.dylib             0x000000010c67cbe9 start_wqthread + 13
+)
+libc++abi.dylib: terminating with uncaught exception of type NSException
