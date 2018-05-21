@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A277" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -9,16 +14,79 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="custom_model_codelab" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tennis" translatesAutoresizingMaskIntoConstraints="NO" id="hM3-04-gpr">
+                                <rect key="frame" x="16" y="20" width="343" height="257.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="hM3-04-gpr" secondAttribute="height" multiplier="4:3" id="5jS-70-f9h"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sqi-NT-fzm">
+                                <rect key="frame" x="16" y="607" width="343" height="40"/>
+                                <color key="backgroundColor" red="1" green="0.27058823529999998" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="1fN-5V-8GC"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Run Model">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="runModel:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3tF-TI-Yb0"/>
+                                </connections>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Select run model for stats" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RLM-jY-aX4">
+                                <rect key="frame" x="16" y="325" width="343" height="274"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i61-IG-436">
+                                <rect key="frame" x="308" y="285.5" width="51" height="31"/>
+                                <connections>
+                                    <action selector="imageChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="G1b-oe-bKC"/>
+                                </connections>
+                            </switch>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="RLM-jY-aX4" secondAttribute="trailing" constant="16" id="0cW-af-79Z"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="sqi-NT-fzm" secondAttribute="trailing" constant="16" id="AI4-26-gay"/>
+                            <constraint firstItem="hM3-04-gpr" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="DqP-VR-X7v"/>
+                            <constraint firstItem="sqi-NT-fzm" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="FDA-Mv-W7c"/>
+                            <constraint firstItem="sqi-NT-fzm" firstAttribute="top" secondItem="RLM-jY-aX4" secondAttribute="bottom" constant="8" id="FPT-Cy-cYu"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="i61-IG-436" secondAttribute="trailing" constant="18" id="HGe-ty-gJq"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="sqi-NT-fzm" secondAttribute="bottom" constant="20" id="HOb-d3-h5b"/>
+                            <constraint firstItem="RLM-jY-aX4" firstAttribute="top" secondItem="i61-IG-436" secondAttribute="bottom" constant="8" id="Jvr-Bk-1WA"/>
+                            <constraint firstItem="i61-IG-436" firstAttribute="top" secondItem="hM3-04-gpr" secondAttribute="bottom" constant="8" id="LBs-V1-KgY"/>
+                            <constraint firstItem="RLM-jY-aX4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="bXY-Xe-YM2"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="hM3-04-gpr" secondAttribute="trailing" constant="16" id="cHd-OM-rUY"/>
+                            <constraint firstItem="hM3-04-gpr" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="mdo-CE-M1g"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="imageToggle" destination="i61-IG-436" id="3cZ-gf-k4y"/>
+                        <outlet property="imageView" destination="hM3-04-gpr" id="b5l-If-rRj"/>
+                        <outlet property="runModel" destination="sqi-NT-fzm" id="ZDz-Wy-Qwf"/>
+                        <outlet property="textView" destination="RLM-jY-aX4" id="fox-pD-DmT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="132.68365817091455"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="tennis" width="2092" height="1394"/>
+    </resources>
 </document>

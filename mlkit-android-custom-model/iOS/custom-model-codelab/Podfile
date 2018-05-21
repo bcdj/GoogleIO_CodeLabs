@@ -1,0 +1,9 @@
+platform :ios, '11.3'
+
+target 'custom-model-codelab' do
+  use_frameworks!
+
+  # Pods for custom-model-codelab
+  pod 'Firebase/Core'
+  pod 'Firebase/MLModelInterpreter'
+end
