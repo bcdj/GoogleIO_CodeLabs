@@ -10,37 +10,49 @@
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="Select image for text recognition"
         android:scaleType="fitStart"
-        app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:contentDescription="Select image for text recognition" />
+        app:layout_constraintTop_toBottomOf="parent" />
+
     <com.google.firebase.codelab.mlkit_custommodel.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button_run"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"
-        />
+        app:layout_constraintBottom_toTopOf="@id/button_run"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
     <Button
         android:id="@+id/button_run"
-        android:text="Run model"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="Run model"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
 </android.support.constraint.ConstraintLayout>
