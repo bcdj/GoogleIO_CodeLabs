@@ -19,8 +19,9 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -30,6 +31,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.ml.common.FirebaseMLException;
+import com.google.firebase.ml.custom.FirebaseModelDataType;
+import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions;
+import com.google.firebase.ml.custom.FirebaseModelInputs;
+import com.google.firebase.ml.custom.FirebaseModelInterpreter;
+import com.google.firebase.ml.custom.FirebaseModelManager;
+import com.google.firebase.ml.custom.FirebaseModelOptions;
+import com.google.firebase.ml.custom.FirebaseModelOutputs;
+import com.google.firebase.ml.custom.model.FirebaseCloudModelSource;
+import com.google.firebase.ml.custom.model.FirebaseLocalModelSource;
+import com.google.firebase.ml.custom.model.FirebaseModelDownloadConditions;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +61,13 @@ import java.util.PriorityQueue;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = "MainActivity";
+
+    // An instance of the driver class to run model inference with Firebase.
+    private FirebaseModelInterpreter mInterpreter;
+
+    // Data configuration of input & output data of model.
+    private FirebaseModelInputOutputOptions mDataOptions;
+
     private Button mRun;
     private ImageView mImageView;
     private Bitmap mSelectedImage;
@@ -120,11 +143,83 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        // TODO: Add your code here to configure model loading.
+        setupFirebaseModel();
+    }
+
+    private void setupFirebaseModel() {
+        int[] inputDims = {DIM_BATCH_SIZE, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y, DIM_PIXEL_SIZE};
+        int[] outputDims = {DIM_BATCH_SIZE, mLabelList.size()};
+
+        try {
+            mDataOptions = new FirebaseModelInputOutputOptions.Builder()
+                    .setInputFormat(0, FirebaseModelDataType.BYTE, inputDims)
+                    .setOutputFormat(0, FirebaseModelDataType.BYTE, outputDims)
+                    .build();
+
+            FirebaseModelDownloadConditions conditions = new FirebaseModelDownloadConditions
+                    .Builder()
+                    .requireWifi()
+                    .build();
+
+            FirebaseLocalModelSource localModelSource = new FirebaseLocalModelSource
+                    .Builder("asset")
+                    .setAssetFilePath(LOCAL_MODEL_ASSET)
+                    .build();
+
+            FirebaseCloudModelSource cloudModelSource = new FirebaseCloudModelSource
+                    .Builder(HOSTED_MODEL_NAME)
+                    .enableModelUpdates(true)
+                    .setInitialDownloadConditions(conditions)
+                    .setUpdatesDownloadConditions(conditions)
+                    .build();
+
+            FirebaseModelManager manager = FirebaseModelManager.getInstance();
+            manager.registerLocalModelSource(localModelSource);
+            manager.registerCloudModelSource(cloudModelSource);
+
+            FirebaseModelOptions modelOptions = new FirebaseModelOptions.Builder()
+                    .setCloudModelName(HOSTED_MODEL_NAME)
+                    .setLocalModelName("asset")
+                    .build();
+
+            mInterpreter = FirebaseModelInterpreter.getInstance(modelOptions);
+
+        } catch (FirebaseMLException e) {
+            showToast("Error while setting up the model");
+            e.printStackTrace();
+        }
     }
 
     private void runModelInference() {
-        // TODO: Add your code here to perform inference using your model.
+        if(mInterpreter == null) {
+            Log.e(TAG, "Image classifier has not been initialized; Skipped.");
+            return;
+        }
+
+        // Create Input Data
+        ByteBuffer imgData = convertBitmapToByteBuffer(mSelectedImage, mSelectedImage.getWidth(),
+                mSelectedImage.getHeight());
+
+        try {
+            FirebaseModelInputs inputs = new FirebaseModelInputs.Builder().add(imgData).build();
+
+            // Here's where the Magic Happens! :)
+            mInterpreter.run(inputs, mDataOptions)
+                    .continueWith(new Continuation<FirebaseModelOutputs, List<String>>() {
+                        @Override
+                        public List<String> then(@NonNull Task<FirebaseModelOutputs> task) {
+                            byte[][] labelProbabilityArray = task.getResult().<byte[][]>getOutput(0);
+                            List<String> topLabels = getTopLabels(labelProbabilityArray);
+                            mGraphicOverlay.clear();
+                            GraphicOverlay.Graphic labelGraphic = new LabelGraphic(mGraphicOverlay, topLabels);
+                            mGraphicOverlay.add(labelGraphic);
+                            return topLabels;
+                        }
+                    });
+        } catch (FirebaseMLException e) {
+            showToast("Error running model inference");
+            e.printStackTrace();
+        }
     }
 
     /**
