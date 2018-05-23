@@ -9,6 +9,11 @@
 import UIKit
 import Firebase
 
+struct Probablity {
+    let label : String
+    let probability : Float
+}
+
 class ViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
@@ -21,10 +26,10 @@ class ViewController: UIViewController {
     private let TENNIS_IMAGE_NAME = "tennis"
     private let MOUNTAIN_IMAGE_NAME = "mountain"
     private let LABELS_FILE = "labels"
-    private let DIM_BATCH_SIZE = NSNumber(value:1);
-    private let DIM_PIXEL_SIZE = NSNumber(value:3);
-    private let DIM_IMG_SIZE_X = NSNumber(value:224);
-    private let DIM_IMG_SIZE_Y = NSNumber(value:224);
+    private let DIM_BATCH_SIZE = NSNumber(value:Float(1));
+    private let DIM_PIXEL_SIZE = NSNumber(value:Float(3));
+    private let DIM_IMG_SIZE_X = NSNumber(value:Float(224));
+    private let DIM_IMG_SIZE_Y = NSNumber(value:Float(224));
     
     private let labelsList : [String]
     private var interpreter : ModelInterpreter?
@@ -33,7 +38,11 @@ class ViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         let text : String
         do {
-            text = try String(contentsOfFile: LABELS_FILE, encoding: .utf8)
+            if let url = Bundle.main.url(forResource:LABELS_FILE, withExtension: "txt") {
+                text = try String(contentsOf: url).trimmingCharacters(in: .whitespacesAndNewlines)
+            } else {
+                text = ""
+            }
         } catch {
             text = ""
         }
@@ -45,7 +54,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let conditions = ModelDownloadConditions(wiFiRequired: true, idleRequired: true)
+        let conditions = ModelDownloadConditions(wiFiRequired: true, idleRequired: false)
         let cloudModelSource = CloudModelSource(
             modelName: HOSTED_MODEL_NAME,
             enableModelUpdates: true,
@@ -60,10 +69,12 @@ class ViewController: UIViewController {
             ModelManager.modelManager().register(localModelSource)
         }
         
-        let options = ModelOptions(
+        let options : ModelOptions
+        options = ModelOptions(
             cloudModelName: HOSTED_MODEL_NAME,
             localModelName: LOCAL_MODEL_NAME
         )
+        
         interpreter = ModelInterpreter(options: options)
         
         ioOptions = ModelInputOutputOptions()
@@ -80,6 +91,7 @@ class ViewController: UIViewController {
     
     @IBAction func imageChanged(_ sender: UISwitch) {
         imageView.image = imageForSwitch(sender)
+        textView.text = "Select run model for predictions"
     }
     
     func imageForSwitch(_ sender:UISwitch) -> UIImage? {
@@ -87,12 +99,67 @@ class ViewController: UIViewController {
         return UIImage(named:imageName)
     }
     
-    @IBAction func runModel(_ sender: Any) {
-        let input = ModelInputs()
-        var data : Data?
-        if let image = imageForSwitch(imageToggle) {
-            data = UIImageJPEGRepresentation(image, 1)
+    func scaledImageData(_ image:UIImage) -> Data? {
+        guard let cgImage = image.cgImage, cgImage.width > 0 else { return nil }
+        let oldComponentsCount = cgImage.bytesPerRow / cgImage.width
+        guard DIM_PIXEL_SIZE.intValue <= oldComponentsCount else { return nil }
+
+        let newWidth = DIM_IMG_SIZE_X.intValue
+        let newHeight = DIM_IMG_SIZE_Y.intValue
+        let dataSize = newWidth * newHeight * oldComponentsCount
+        var imageData = [UInt8](repeating: 0, count: dataSize)
+        guard let context = CGContext(
+            data: &imageData,
+            width: newWidth,
+            height: newHeight,
+            bitsPerComponent: cgImage.bitsPerComponent,
+            bytesPerRow: oldComponentsCount * newWidth,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else {
+                return nil
         }
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let count = newWidth * newHeight * DIM_PIXEL_SIZE.intValue * DIM_BATCH_SIZE.intValue
+        var scaledImageDataArray = [UInt8](repeating: 0, count: count)
+        var pixelIndex = 0
+        for _ in 0..<newWidth {
+            for _ in 0..<newHeight {
+                let pixel = imageData[pixelIndex]
+                pixelIndex += 1
+
+                // Ignore the alpha component.
+                let red = (pixel >> 16) & 0xFF
+                let green = (pixel >> 8) & 0xFF
+                let blue = (pixel >> 0) & 0xFF
+                scaledImageDataArray[pixelIndex] = red
+                scaledImageDataArray[pixelIndex + 1] = green
+                scaledImageDataArray[pixelIndex + 2] = blue
+            }
+        }
+        let scaledImageData = Data(bytes: scaledImageDataArray)
+        let newImage = UIImage(data: scaledImageData)
+        
+        
+        return scaledImageData
+    }
+    
+    @IBAction func runModel(_ sender: Any) {
+        
+        if let image = imageForSwitch(imageToggle) {
+//            DispatchQueue.global(qos:.background).async {
+                self.runModel(onImage: image) { labels in
+//                    DispatchQueue.main.async {
+                        self.textView.text = labels.joined(separator: "\n")
+//                    }
+                }
+//            }
+        }
+    }
+    
+    func runModel(onImage image:UIImage, completion: @escaping ([String]) -> Void) {
+        let input = ModelInputs()
+        let data = scaledImageData(image)
         
         do {
             try input.addInput(data as Any)
@@ -102,11 +169,38 @@ class ViewController: UIViewController {
         }
         
         if let interpreter = interpreter, let ioOptions = ioOptions {
-            interpreter.run(inputs: input, options: ioOptions) { (outputs, _) in
+            interpreter.run(inputs: input, options: ioOptions) { (outputs, error) in
+                if let error = error {
+                    print("\(error.localizedDescription)")
+                }
+                
                 let probabilities = try? outputs?.output(index: 0)
-               
+                
+                if let probabilitiesArray = probabilities as? [[UInt8]] {
+                   completion(self.topLabels(byteArray: probabilitiesArray[0]))
+                }
+                
             }
         }
     }
+    
+    func topLabels(byteArray:[UInt8]) -> [String] {
+        
+        var labels = Array<Probablity>()
+        
+        for (index, element) in byteArray.enumerated() {
+            let probaility = Float(Float((element & 0xff))/255.0)
+            labels.append(Probablity(label: labelsList[index], probability: probaility))
+        }
+        
+        labels.sort(by: { $0.probability > $1.probability })
+        print(labels)
+        
+        var topLabels = Array<String>()
+        for index in 0...3 {
+            topLabels.append("\(labels[index].label) : \(labels[index].probability)")
+        }
+        
+        return topLabels
+    }
 }
-

@@ -8,7 +8,7 @@ https://g.co/codelabs/mlkit-android-custom-model
 This folder and projects follows the guide almost one for one on the implementation. This is an Android application built and tested only in the emulator.
 
 ### iOS
-This folder takes the Android sample application and ports it to iOS.
+This folder takes the Android sample application and ports it to iOS. When working on this though an error was discovered with the Cloud Fetching so that portion was commented out and the [error message logged](iOS/custom-model-codelab/ErrorLogs.txt).
 
 ### Model
-Contains the Pretrained model for the exercise.
+Contains the pre-trained model for the exercise.

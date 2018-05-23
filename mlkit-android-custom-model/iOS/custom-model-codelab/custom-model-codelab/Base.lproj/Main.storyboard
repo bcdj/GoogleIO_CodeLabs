@@ -44,7 +44,7 @@
                                     <action selector="runModel:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3tF-TI-Yb0"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Select run model for stats" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RLM-jY-aX4">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Select run model for predictions" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RLM-jY-aX4">
                                 <rect key="frame" x="16" y="325" width="343" height="274"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -87,6 +87,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="tennis" width="2092" height="1394"/>
+        <image name="tennis" width="4184" height="2789"/>
     </resources>
 </document>
