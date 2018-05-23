@@ -71,7 +71,7 @@ class ViewController: UIViewController {
         
         let options : ModelOptions
         options = ModelOptions(
-            cloudModelName: HOSTED_MODEL_NAME,
+            cloudModelName: nil,
             localModelName: LOCAL_MODEL_NAME
         )
         
@@ -138,8 +138,9 @@ class ViewController: UIViewController {
             }
         }
         let scaledImageData = Data(bytes: scaledImageDataArray)
-        let newImage = UIImage(data: scaledImageData)
-        
+        if let newImage = context.makeImage() {
+            imageView.image = UIImage(cgImage:newImage)
+        }
         
         return scaledImageData
     }
@@ -147,13 +148,9 @@ class ViewController: UIViewController {
     @IBAction func runModel(_ sender: Any) {
         
         if let image = imageForSwitch(imageToggle) {
-//            DispatchQueue.global(qos:.background).async {
                 self.runModel(onImage: image) { labels in
-//                    DispatchQueue.main.async {
                         self.textView.text = labels.joined(separator: "\n")
-//                    }
                 }
-//            }
         }
     }
     
@@ -189,15 +186,13 @@ class ViewController: UIViewController {
         var labels = Array<Probablity>()
         
         for (index, element) in byteArray.enumerated() {
-            let probaility = Float(Float((element & 0xff))/255.0)
+            let probaility = Float(Float((element & 0xFF))/255.0)
             labels.append(Probablity(label: labelsList[index], probability: probaility))
         }
-        
         labels.sort(by: { $0.probability > $1.probability })
-        print(labels)
         
         var topLabels = Array<String>()
-        for index in 0...3 {
+        for index in 0...2 {
             topLabels.append("\(labels[index].label) : \(labels[index].probability)")
         }
         
